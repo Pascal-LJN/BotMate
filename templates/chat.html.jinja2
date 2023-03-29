@@ -1,117 +1,223 @@
 <!DOCTYPE html>
-<html>
-
-  <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bot Mate</title>
     <style>
-      .chat-item {
-        margin-bottom: 10px;
-        padding: 5px;
-      }
+        body {
+            background-color: #f8f8f8;
+            font-family: Arial, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
 
-      .feedback {
-        white-space: pre-wrap;
-      }
+        h1 {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
 
-      label {
-        display: block;
-        margin-bottom: 5px;
-      }
+        h5 {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
 
-      input[type="text"],
-      textarea {
-        display: block;
-        width: 120ch;
-      }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-      #message.submitting {
-        background-color: #e6e4e4;
-      }
+        .chat-history {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-      pre code.hljs {
-        display: block;
-        overflow-x: auto;
-        padding: 0.5em;
-        width: 120ch;
-        /* set width to 120 characters */
-        white-space: pre-wrap;
-        /* allow for wrapping within the code block */
-      }
+        .chat-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
 
-      /* modify the following styles to align the chat-history */
-      #chat-history {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-      }
+        .chat-item pre {
+            margin: 0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+            white-space: pre-wrap;
+        }
 
-      .chat-item {
-        align-self: flex-start;
-        margin: 0;
-      }
+        .chat-item.incoming pre {
+            background-color: #fff;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-item.outgoing pre {
+            background-color: #d3f3c6;
+        }
+
+        .feedback pre {
+            margin: 0;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .feedback pre code {
+            display: inline-block;
+            font-size: 14px;
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 5px;
+            color: #000;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        textarea {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        #message {
+            resize: none;
+            height: 120px;
+        }
+
+        input[type="submit"] {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0062cc;
+        }
+
+        .token-form {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 40px;
+        }
+
+        .token-form span {
+            font-size: 16px;
+            color: #888;
+        }
+
+        .delete-token {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .delete-token:hover {
+            background-color: #c82333;
+        }
+
+        @media screen and (max-width: 767px) {
+            h1 {
+                margin-top: 20px;
+            }
+
+            .chat-item pre,
+            .feedback pre {
+                max-width: 100%;
+            }
+        }
     </style>
     <!-- Include highlight.js -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css">
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
-  </head>
+</head>
 
-  <body>
-    <h1>Bot Mate</h1>
+<body>
+    <div class="container">
+        <h1>Bot Mate</h1>
 
-    <div id="chat-history">
-      {% for message, feedback in chat_history %}
-      <div class="chat-item">
-        <div>
-          <pre>😐: {{ message }}</pre>
-        </div>
-        <div>
-          <pre>🖥: <code class="hljs">{{ feedback }}</code></pre>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
+        <ul class="chat-history">
+            {% for message, feedback in chat_history %}
+            <li class="chat-item incoming">
+                <pre>{{ message }}</pre>
+ </li>
+        <li class="chat-item outgoing">
+            <div class="feedback">
+                <pre><code class="hljs">{{ feedback|replace("&", "&amp;")|replace("<", "&lt;")|replace(">", "&gt;")|safe }}</code></pre>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
 
     <h5>机器生成的回答文本越长，提交问题后等待的时间也越长，请耐心等待</h5>
 
-    <form action="{{ url_for('forget') }}" method="POST">
-      <span>令牌数量 {{ current_token_count }}</span>
-      &nbsp;
-      <input type="submit" value="删除记忆">
+    <form class="token-form" action="{{ url_for('forget') }}" method="POST">
+        <span>令牌数量 {{ current_token_count }}</span>
+        <button class="delete-token" type="submit">删除记忆</button>
     </form>
 
     <form id="chat-form" action="{{ url_for('chat') }}" method="post">
-      <label for="message">Message: [按 ENTER 键提交]</label>
-      <textarea id="message" name="message" rows="4" autofocus></textarea>
-      <label for="token">Token:</label>
-      <input type="text" id="token" name="token">
-      <input type="submit" value="提交" id="submit-button">
+        <label for="message">Message: [按 ENTER 键提交]</label>
+        <textarea id="message" name="message" rows="4" autofocus></textarea>
+        <label for="token">Token:</label>
+        <input type="text" id="token" name="token">
+        <button class="submit-button" type="submit">提交</button>
     </form>
-    <script>
-      const savedToken = localStorage.getItem("token");
-      if (savedToken) {
+</div>
+
+<script>
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) {
         document.getElementById("token").value = savedToken;
-      }
+    }
 
-      document.getElementById("message").addEventListener("keydown", function (event) {
+    document.getElementById("message").addEventListener("keydown", function (event) {
         if (event.keyCode === 13) {
-          event.preventDefault();
-          document.getElementById("submit-button").disabled = true;
-          document.getElementById("message").classList.add("submitting");
-          document.getElementById("chat-form").submit();
+            event.preventDefault();
+            document.querySelector(".submit-button").disabled = true;
+            document.getElementById("message").classList.add("submitting");
+            document.getElementById("chat-form").submit();
         }
-      });
+    });
 
-      document.getElementById("token").addEventListener("input", function (event) {
+    document.getElementById("token").addEventListener("input", function (event) {
         localStorage.setItem("token", event.target.value);
-      });
+    });
 
-      document.getElementById("chat-form").addEventListener("submit", function () {
+    document.getElementById("chat-form").addEventListener("submit", function () {
         document.getElementById("message").classList.remove("submitting");
-      });
+    });
 
-      hljs.highlightAll();
-    </script>
-  </body>
+    hljs.highlightAll();
+</script>
+</body>
 
 </html>
